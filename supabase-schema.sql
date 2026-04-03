@@ -1,5 +1,5 @@
 -- ============================================
--- PrintForge — Schema bazy danych Supabase
+-- Print-Forge — Schema bazy danych Supabase
 -- Wklej całość do: Supabase → SQL Editor → Run
 -- ============================================
 

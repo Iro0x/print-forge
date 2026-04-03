@@ -14,7 +14,7 @@ export default function Home() {
       <section className={styles.hero}>
         <div className={styles.heroGrid}></div>
         <div className={styles.heroLeft}>
-          <div className={styles.heroTag}>Druk 3D Premium · Polska</div>
+          <div className={styles.heroTag}>Druk 3D Premium</div>
           <h1 className={styles.heroTitle}>
             Twój pomysł<em>w trzech wymiarach</em>
           </h1>

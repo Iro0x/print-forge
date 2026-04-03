@@ -1,7 +1,7 @@
 import './globals.css'
 
 export const metadata = {
-  title: 'PrintForge — Druk 3D na Zamówienie',
+  title: 'Print-Forge — Druk 3D na Zamówienie',
   description: 'Profesjonalny druk 3D: customowe wydruki z Twojego pliku oraz gotowe modele ze sklepu. Warszawa i cała Polska.',
 }
 

@@ -15,7 +15,7 @@ export default function Footer() {
         {[
           { title: 'Usługi', links: [{ href: '/zamow', label: 'Druk na zamówienie' }, { href: '/sklep', label: 'Sklep z wydrukami' }] },
           { title: 'Informacje', links: [{ href: '#', label: 'FAQ' }, { href: '#', label: 'Regulamin' }, { href: '#', label: 'Polityka prywatności' }] },
-          { title: 'Kontakt', links: [{ href: 'mailto:hello@printforge.pl', label: 'hello@printforge.pl' }, { href: 'tel:+48123456789', label: '+48 123 456 789' }] },
+          { title: 'Kontakt', links: [{ href: 'mailto:hello@print-forge.pl', label: 'hello@print-forge.pl' }, { href: 'tel:+48123456789', label: '+48 123 456 789' }] },
         ].map(col => (
           <div key={col.title}>
             <h4 style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: '1.25rem' }}>{col.title}</h4>
@@ -28,8 +28,8 @@ export default function Footer() {
         ))}
       </div>
       <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem', display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--muted)', fontFamily: "'DM Mono', monospace" }}>
-        <span>© 2025 PrintForge. Wszelkie prawa zastrzeżone.</span>
-        <span>Made with ♥ in Warsaw</span>
+        <span>© 2026 Print-Forge. Wszelkie prawa zastrzeżone.</span>
+        <span>Made with ♥ in Poland</span>
       </div>
     </footer>
   )

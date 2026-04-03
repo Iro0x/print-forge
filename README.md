@@ -1,4 +1,4 @@
-# 🖨️ PrintForge — Druk 3D na Zamówienie
+# 🖨️ Print-Forge — Druk 3D na Zamówienie
 
 Aplikacja e-commerce dla drukarni 3D zbudowana w Next.js + Supabase + Stripe.
 

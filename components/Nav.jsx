@@ -21,7 +21,7 @@ export default function Nav() {
       transition: 'all 0.3s',
     }}>
       <Link href="/" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.9rem', letterSpacing: '0.05em' }}>
-        <span style={{ color: 'var(--accent)' }}>Print</span>Forge
+        <span style={{ color: 'var(--accent)' }}>Print</span>-Forge
       </Link>
       <ul style={{ display: 'flex', gap: '2.5rem', listStyle: 'none' }}>
         {[
