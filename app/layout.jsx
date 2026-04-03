@@ -1,0 +1,18 @@
+import './globals.css'
+
+export const metadata = {
+  title: 'PrintForge — Druk 3D na Zamówienie',
+  description: 'Profesjonalny druk 3D: customowe wydruki z Twojego pliku oraz gotowe modele ze sklepu. Warszawa i cała Polska.',
+}
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="pl">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+      </head>
+      <body>{children}</body>
+    </html>
+  )
+}
