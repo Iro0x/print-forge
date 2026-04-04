@@ -1,4 +1,5 @@
 import './globals.css'
+import Cursor from '@/components/Cursor'
 
 export const metadata = {
   title: 'Print-Forge — Druk 3D na Zamówienie',
@@ -12,7 +13,10 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Cursor />
+      </body>
     </html>
   )
 }
