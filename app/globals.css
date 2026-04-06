@@ -40,7 +40,7 @@ input, select, textarea { font-family: inherit; }
   z-index: 9999;
   transform: translate(-50%, -50%);
   transition: width 0.2s, height 0.2s, background 0.2s;
-  mix-blend-mode: exclusion;
+  mix-blend-mode:difference;
 }
 
 .cursor.big {

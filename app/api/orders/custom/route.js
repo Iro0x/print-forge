@@ -26,7 +26,7 @@ export async function POST(request) {
       filePath = `orders/${Date.now()}-${fileName}`
 
       const { error: uploadError } = await supabaseAdmin.storage
-        .from('models')
+        .from('order-files')
         .upload(filePath, buffer, {
           contentType: file.type || 'application/octet-stream',
         })
