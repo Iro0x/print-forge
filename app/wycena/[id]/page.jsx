@@ -233,8 +233,50 @@ export default function WycenaPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
                 {order.status !== 'quoted' ? (
-                  <div style={{ background: '#333', borderRadius: '2px', padding: '1.25rem', color: '#aaa', fontFamily: mono, fontSize: '0.85rem' }}>
-                    To zamówienie nie oczekuje już na odpowiedź. Aktualny status: <strong style={{ color: '#f0ece4' }}>{order.status}</strong>
+                  <div>
+                    {order.status === 'paid' && (
+                      <div style={{ background: '#10b98115', border: '1px solid #10b981', borderRadius: '2px', padding: '1.5rem', textAlign: 'center' }}>
+                        <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>✅</div>
+                        <div style={{ fontFamily: mono, fontSize: '0.75rem', color: '#10b981', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Płatność potwierdzona</div>
+                        <div style={{ color: '#aaa', fontSize: '0.85rem', lineHeight: 1.7 }}>
+                          Dziękujemy! Twoja płatność została przyjęta.<br />
+                          Poinformujemy Cię e-mailem gdy paczka zostanie nadana.
+                        </div>
+                      </div>
+                    )}
+                    {order.status === 'printing' && (
+                      <div style={{ background: '#8b5cf615', border: '1px solid #8b5cf6', borderRadius: '2px', padding: '1.5rem', textAlign: 'center' }}>
+                        <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🖨️</div>
+                        <div style={{ fontFamily: mono, fontSize: '0.75rem', color: '#8b5cf6', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>W trakcie druku</div>
+                        <div style={{ color: '#aaa', fontSize: '0.85rem' }}>Twój model jest właśnie drukowany.</div>
+                      </div>
+                    )}
+                    {order.status === 'shipped' && (
+                      <div style={{ background: '#3b82f615', border: '1px solid #3b82f6', borderRadius: '2px', padding: '1.5rem', textAlign: 'center' }}>
+                        <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>📦</div>
+                        <div style={{ fontFamily: mono, fontSize: '0.75rem', color: '#3b82f6', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Paczka wysłana</div>
+                        <div style={{ color: '#aaa', fontSize: '0.85rem' }}>Twoje zamówienie zostało nadane.</div>
+                      </div>
+                    )}
+                    {order.status === 'done' && (
+                      <div style={{ background: '#22c55e15', border: '1px solid #22c55e', borderRadius: '2px', padding: '1.5rem', textAlign: 'center' }}>
+                        <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🎉</div>
+                        <div style={{ fontFamily: mono, fontSize: '0.75rem', color: '#22c55e', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Zamówienie zakończone</div>
+                        <div style={{ color: '#aaa', fontSize: '0.85rem' }}>Dziękujemy za zakup!</div>
+                      </div>
+                    )}
+                    {order.status === 'cancelled' && (
+                      <div style={{ background: '#ef444415', border: '1px solid #ef4444', borderRadius: '2px', padding: '1.5rem', textAlign: 'center' }}>
+                        <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>❌</div>
+                        <div style={{ fontFamily: mono, fontSize: '0.75rem', color: '#ef4444', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Zamówienie anulowane</div>
+                        <div style={{ color: '#aaa', fontSize: '0.85rem' }}>Jeśli to pomyłka, napisz na kontakt@print-forge.pl</div>
+                      </div>
+                    )}
+                    {!['paid','printing','shipped','done','cancelled'].includes(order.status) && (
+                      <div style={{ background: '#333', borderRadius: '2px', padding: '1.25rem', color: '#aaa', fontFamily: mono, fontSize: '0.85rem' }}>
+                        To zamówienie nie oczekuje już na odpowiedź. Aktualny status: <strong style={{ color: '#f0ece4' }}>{order.status}</strong>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <>

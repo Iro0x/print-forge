@@ -1,26 +1,191 @@
+'use client'
+import { useEffect, useState, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
+
+const mono = "'DM Mono', monospace"
+const bebas = "'Bebas Neue', sans-serif"
+
+const btnPrimary = {
+  display: 'inline-flex', alignItems: 'center',
+  padding: '0.85rem 2rem', fontSize: '0.85rem', fontWeight: 500,
+  letterSpacing: '0.08em', textTransform: 'uppercase', borderRadius: '2px',
+  background: 'var(--accent)', color: 'white', textDecoration: 'none',
+}
+const btnOutline = {
+  ...btnPrimary,
+  background: 'transparent', color: 'var(--text)', border: '1px solid var(--border)',
+}
+
+function SukcesContent() {
+  const searchParams = useSearchParams()
+  const sessionId = searchParams.get('session_id')
+  const [state, setState] = useState('loading') // 'loading' | 'custom' | 'shop' | 'generic'
+  const [order, setOrder] = useState(null)
+  const [attempts, setAttempts] = useState(0)
+
+  useEffect(() => {
+    if (!sessionId) { setState('generic'); return }
+
+    let tries = 0
+    const maxTries = 6
+
+    const poll = async () => {
+      try {
+        const res = await fetch(`/api/orders/success?session_id=${sessionId}`)
+        const json = await res.json()
+
+        if (json.type) {
+          setOrder(json.order)
+          setState(json.type)
+          return
+        }
+      } catch {}
+
+      tries++
+      setAttempts(tries)
+
+      // Webhook może być opóźniony — odpytuj co 2s, max 6 razy (12s)
+      if (tries < maxTries) {
+        setTimeout(poll, 2000)
+      } else {
+        setState('generic')
+      }
+    }
+
+    poll()
+  }, [sessionId])
+
+  if (state === 'loading') {
+    return (
+      <div style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1.5rem' }}>
+        <div style={{ width: '48px', height: '48px', border: '2px solid var(--border)', borderTop: '2px solid var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        <p style={{ fontFamily: mono, fontSize: '0.75rem', color: 'var(--muted)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+          Weryfikowanie płatności{attempts > 0 ? ` (${attempts})` : ''}...
+        </p>
+      </div>
+    )
+  }
+
+  if (state === 'custom') {
+    return (
+      <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4rem 2rem' }}>
+        <div style={{ maxWidth: '560px', width: '100%', textAlign: 'center' }}>
+          <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>🖨️</div>
+          <div style={{ fontFamily: mono, fontSize: '0.7rem', color: 'var(--accent)', letterSpacing: '0.25em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>// Płatność przyjęta</div>
+          <h1 style={{ fontFamily: bebas, fontSize: 'clamp(2.5rem, 5vw, 4.5rem)', color: 'var(--accent)', lineHeight: 1, marginBottom: '2rem' }}>Zaczynamy drukować!</h1>
+
+          {order && (
+            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderTop: '3px solid var(--accent)', borderRadius: '2px', padding: '1.5rem', marginBottom: '2rem', textAlign: 'left' }}>
+              <div style={{ fontFamily: mono, fontSize: '0.65rem', color: 'var(--muted)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '1rem' }}>Szczegóły zamówienia</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.875rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--muted)' }}>Zamówienie</span>
+                  <span style={{ fontFamily: mono, fontSize: '0.8rem' }}>#{order.id.slice(0, 8).toUpperCase()}</span>
+                </div>
+                {order.file_name && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'var(--muted)' }}>Plik</span>
+                    <span style={{ fontFamily: mono, fontSize: '0.8rem' }}>{order.file_name}</span>
+                  </div>
+                )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '1px solid var(--border)' }}>
+                  <span style={{ color: 'var(--muted)' }}>Zapłacono</span>
+                  <span style={{ fontFamily: bebas, fontSize: '1.3rem', color: 'var(--accent)' }}>{order.quoted_price} zł</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderLeft: '3px solid var(--accent)', padding: '1rem 1.25rem', borderRadius: '2px', textAlign: 'left', marginBottom: '2rem', fontSize: '0.85rem', color: 'var(--muted)', lineHeight: 1.7 }}>
+            Potwierdzenie zostało wysłane na Twój adres e-mail.<br />
+            Gdy paczka zostanie nadana, otrzymasz kolejną wiadomość z informacją o dostawie.
+          </div>
+
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <Link href="/" style={btnPrimary}>Strona główna</Link>
+            <Link href="/zamow" style={btnOutline}>Nowe zamówienie</Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (state === 'shop') {
+    return (
+      <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4rem 2rem' }}>
+        <div style={{ maxWidth: '560px', width: '100%', textAlign: 'center' }}>
+          <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>📦</div>
+          <div style={{ fontFamily: mono, fontSize: '0.7rem', color: 'var(--accent)', letterSpacing: '0.25em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>// Płatność przyjęta</div>
+          <h1 style={{ fontFamily: bebas, fontSize: 'clamp(2.5rem, 5vw, 4.5rem)', color: 'var(--accent)', lineHeight: 1, marginBottom: '2rem' }}>Dziękujemy!</h1>
+
+          {order && (
+            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderTop: '3px solid var(--accent)', borderRadius: '2px', padding: '1.5rem', marginBottom: '2rem', textAlign: 'left' }}>
+              <div style={{ fontFamily: mono, fontSize: '0.65rem', color: 'var(--muted)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '1rem' }}>Szczegóły zamówienia</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.875rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--muted)' }}>Zamówienie</span>
+                  <span style={{ fontFamily: mono, fontSize: '0.8rem' }}>#{order.id.slice(0, 8).toUpperCase()}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--muted)' }}>Klient</span>
+                  <span>{order.customer_name}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '1px solid var(--border)' }}>
+                  <span style={{ color: 'var(--muted)' }}>Łącznie</span>
+                  <span style={{ fontFamily: bebas, fontSize: '1.3rem', color: 'var(--accent)' }}>{order.total_amount} zł</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderLeft: '3px solid var(--accent)', padding: '1rem 1.25rem', borderRadius: '2px', textAlign: 'left', marginBottom: '2rem', fontSize: '0.85rem', color: 'var(--muted)', lineHeight: 1.7 }}>
+            Potwierdzenie zostało wysłane na Twój adres e-mail.<br />
+            Poinformujemy Cię, gdy paczka zostanie nadana.
+          </div>
+
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <Link href="/sklep" style={btnPrimary}>Wróć do sklepu</Link>
+            <Link href="/" style={btnOutline}>Strona główna</Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Fallback — brak session_id lub timeout webhooka
+  return (
+    <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4rem 2rem', textAlign: 'center' }}>
+      <div style={{ maxWidth: '500px' }}>
+        <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>✅</div>
+        <h1 style={{ fontFamily: bebas, fontSize: 'clamp(2.5rem, 5vw, 4.5rem)', color: 'var(--accent)', lineHeight: 1, marginBottom: '1.5rem' }}>Płatność przyjęta!</h1>
+        <p style={{ color: 'var(--muted)', fontSize: '1rem', lineHeight: 1.8, fontWeight: 300, marginBottom: '2rem' }}>
+          Dziękujemy za zamówienie. Potwierdzenie zostało wysłane na Twój adres e-mail.
+        </p>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+          <Link href="/" style={btnPrimary}>Strona główna</Link>
+          <Link href="/sklep" style={btnOutline}>Sklep</Link>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function SukcesPage() {
   return (
     <>
       <Nav />
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1.5rem', padding: '8rem 4rem', textAlign: 'center' }}>
-        <div style={{ fontSize: '5rem' }}>✅</div>
-        <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2.5rem, 5vw, 5rem)', color: 'var(--accent)' }}>Płatność przyjęta!</h1>
-        <p style={{ color: 'var(--muted)', fontSize: '1.05rem', maxWidth: '500px', lineHeight: 1.8, fontWeight: 300 }}>
-          Dziękujemy za zamówienie. Potwierdzenie zostało wysłane na Twój adres e-mail. Rozpoczynamy realizację — poinformujemy Cię o wysyłce.
-        </p>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center', marginTop: '1rem' }}>
-          <Link href="/sklep" style={{ display: 'inline-flex', alignItems: 'center', padding: '0.85rem 2rem', fontSize: '0.85rem', fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', borderRadius: '2px', background: 'var(--accent)', color: 'white' }}>
-            Wróć do sklepu
-          </Link>
-          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', padding: '0.85rem 2rem', fontSize: '0.85rem', fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', borderRadius: '2px', background: 'transparent', color: 'var(--text)', border: '1px solid var(--border)' }}>
-            Strona główna
-          </Link>
+      <Suspense fallback={
+        <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: '48px', height: '48px', border: '2px solid var(--border)', borderTop: '2px solid var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>
-      </div>
+      }>
+        <SukcesContent />
+      </Suspense>
       <Footer />
     </>
   )
