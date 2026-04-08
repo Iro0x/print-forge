@@ -15,7 +15,7 @@ export async function POST(request) {
       .single()
 
     if (error || !order) return NextResponse.json({ error: 'Nie znaleziono zamówienia' }, { status: 404 })
-    if (order.status !== 'quoted') return NextResponse.json({ error: 'Zamówienie nie oczekuje na płatność' }, { status: 409 })
+    if (!['quoted', 'accepted'].includes(order.status)) return NextResponse.json({ error: 'Zamówienie nie oczekuje na płatność' }, { status: 409 })
     if (!order.quoted_price) return NextResponse.json({ error: 'Brak wyceny dla tego zamówienia' }, { status: 400 })
 
     const session = await stripe.checkout.sessions.create({

@@ -67,7 +67,7 @@
   border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
   display: grid; grid-template-columns: repeat(4, 1fr);
 }
-.stat { padding: 2.5rem 3rem; border-right: 1px solid var(--border); }
+.stat { padding: 2.5rem 3rem; border-right: 1px solid var(--border); background:var(--surface);}
 .stat:last-child { border-right: none; }
 .statNum { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; color: var(--accent); line-height: 1; margin-bottom: 0.25rem; }
 .statLabel { font-size: 0.8rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
@@ -80,7 +80,7 @@
 .services { padding: 7rem 4rem; background: var(--bg); }
 .servicesGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
 .serviceCard {
-  background: var(--bg); padding: 3.5rem; position: relative; overflow: hidden; transition: background 0.3s;
+  background: var(--surface); padding: 3.5rem; position: relative; overflow: hidden; transition: background 0.3s;
 }
 .serviceCard:hover { background: var(--surface); }
 .serviceCard::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 0.3s; }
@@ -96,7 +96,7 @@
 /* PROCESS */
 .process { padding: 7rem 4rem; background: var(--bg); border-top: 1px solid var(--border); }
 .processSteps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
-.step { background: var(--bg); padding: 2.5rem 2rem; position: relative; }
+.step { background: var(--surface); padding: 2.5rem 2rem; position: relative; }
 .step:hover { background: var(--surface); }
 .stepNum { font-family: 'Bebas Neue', sans-serif; font-size: 5rem; color: var(--surface2); line-height: 1; position: absolute; top: 1.5rem; right: 1.5rem; }
 .stepIcon { font-size: 2rem; margin-bottom: 1rem; display: block; }

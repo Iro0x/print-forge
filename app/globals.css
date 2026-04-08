@@ -27,7 +27,7 @@ input, select, textarea { font-family: inherit; }
 
 
 * {
-  /* cursor: none !important; */
+  cursor: none !important;
 }
 
 .cursor {
