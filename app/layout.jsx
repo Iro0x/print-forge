@@ -6,6 +6,11 @@ export const metadata = {
   description: 'Profesjonalny druk 3D: customowe wydruki z Twojego pliku oraz gotowe modele ze sklepu. Warszawa i cała Polska.',
 }
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+}
+
 export default function RootLayout({ children }) {
   return (
     <html lang="pl">

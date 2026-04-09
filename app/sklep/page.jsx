@@ -127,15 +127,16 @@ function ProductModal({ product, onClose, onAddToCart }) {
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
       style={{
         position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 300,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: '2rem', backdropFilter: 'blur(4px)',
+        display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+        padding: '1rem', paddingTop: 'max(1rem, env(safe-area-inset-top))', backdropFilter: 'blur(4px)',
+        overflowY: 'auto',
       }}
     >
       <style>{`@keyframes slideUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }`}</style>
 
       <div style={{
         background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '4px',
-        width: '100%', maxWidth: '900px', maxHeight: '90vh', overflowY: 'auto',
+        width: '100%', maxWidth: '900px',
         position: 'relative', animation: 'slideUp 0.3s ease',
       }}>
         {/* ZAMKNIJ */}
@@ -148,9 +149,9 @@ function ProductModal({ product, onClose, onAddToCart }) {
         }}>✕</button>
 
         {/* GÓRNA SEKCJA */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
+        <div className="modal-top-grid">
           {/* LEWA — zdjęcia */}
-          <div style={{ borderRight: '1px solid var(--border)' }}>
+          <div className="modal-img-border" style={{ borderRight: '1px solid var(--border)' }}>
             {/* Główne zdjęcie */}
             <div style={{
               aspectRatio: '1', background: 'var(--bg)',
@@ -505,7 +506,7 @@ export default function SklepPage() {
         />
       )}
 
-      <div style={{ padding: '8rem 4rem 6rem', maxWidth: '1300px', margin: '0 auto' }}>
+      <div className="sklep-wrap">
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '3rem', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', color: 'var(--accent)', letterSpacing: '0.25em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>// Sklep</div>
@@ -534,7 +535,7 @@ export default function SklepPage() {
         {loading ? (
           <p style={{ color: 'var(--muted)', textAlign: 'center', padding: '4rem' }}>Ładowanie produktów...</p>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: 'var(--border)', border: '1px solid var(--border)' }}>
+          <div className="products-grid">
             {filtered.map(product => (
               <div
                 key={product.id}
@@ -593,8 +594,8 @@ export default function SklepPage() {
 
       {/* CART MODAL */}
       {showCart && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }} onClick={e => { if (e.target === e.currentTarget) setShowCart(false) }}>
-          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '4px', padding: '2.5rem', width: '100%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }} onClick={e => { if (e.target === e.currentTarget) setShowCart(false) }}>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '4px', padding: '1.5rem', width: '100%', maxWidth: '500px', maxHeight: '90vh', overflowY: 'auto' }}>
             <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2rem', marginBottom: '1.5rem' }}>Koszyk</h2>
             {cart.map(item => (
               <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 0', borderBottom: '1px solid var(--border)' }}>

@@ -145,3 +145,16 @@
   .heroLeft, .services, .process { padding: 5rem 2rem; }
   .ctaSection { padding: 4rem 2rem; }
 }
+
+@media (max-width: 640px) {
+  .heroLeft { padding: 5rem 1.5rem 3rem; }
+  .stat { padding: 1.25rem 1rem; }
+  .statNum { font-size: 2.2rem; }
+  .statLabel { font-size: 0.7rem; }
+  .services, .process { padding: 3.5rem 1.5rem; }
+  .processSteps { grid-template-columns: 1fr; }
+  .ctaSection { padding: 2.5rem 1.5rem; }
+  .sectionTitle { margin-bottom: 1.5rem; }
+  .serviceCard { padding: 2rem 1.5rem; }
+  .step { padding: 2rem 1.5rem; }
+}

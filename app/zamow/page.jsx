@@ -53,11 +53,11 @@ export default function ZamowPage() {
     <>
       <Nav />
       <Toast toast={toast} />
-      <div style={{ paddingTop: '8rem', paddingBottom: '6rem', padding: '8rem 4rem 6rem', maxWidth: '1200px', margin: '0 auto' }}>
+      <div className="zamow-wrap">
         <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', color: 'var(--accent)', letterSpacing: '0.25em', textTransform: 'uppercase', marginBottom: '1rem' }}>// Zamówienie niestandardowe</div>
         <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2.5rem, 4vw, 4rem)', marginBottom: '3rem' }}>Prześlij swój projekt</h1>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '5rem', alignItems: 'start' }}>
+        <div className="zamow-layout">
           {/* UPLOAD */}
           <div>
             <FileUpload onFileSelect={setFile} />
@@ -68,7 +68,7 @@ export default function ZamowPage() {
 
           {/* FORM */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="form-row-2">
               <div>
                 <label style={labelStyle}>Imię i nazwisko *</label>
                 <input name="customer_name" value={form.customer_name} onChange={handleChange} placeholder="Jan Kowalski" style={inputStyle} />
@@ -78,7 +78,7 @@ export default function ZamowPage() {
                 <input name="customer_email" type="email" value={form.customer_email} onChange={handleChange} placeholder="jan@firma.pl" style={inputStyle} />
               </div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="form-row-2">
               <div>
                 <label style={labelStyle}>Telefon</label>
                 <input name="customer_phone" value={form.customer_phone} onChange={handleChange} placeholder="+48 000 000 000" style={inputStyle} />
@@ -88,7 +88,7 @@ export default function ZamowPage() {
                 <input name="quantity" type="number" min="1" value={form.quantity} onChange={handleChange} style={inputStyle} />
               </div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="form-row-2">
               <div>
                 <label style={labelStyle}>Technologia</label>
                 <select name="technology" value={form.technology} onChange={handleChange} style={inputStyle}>

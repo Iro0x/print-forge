@@ -31,6 +31,7 @@ CREATE TABLE custom_orders (
   status VARCHAR(50) DEFAULT 'pending',
   quoted_price DECIMAL(10,2),
   stripe_payment_intent_id TEXT,
+  stripe_session_id TEXT,
   paid_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
