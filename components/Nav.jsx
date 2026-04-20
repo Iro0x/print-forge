@@ -1,11 +1,13 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image' 
 
 const LINKS = [
   { href: '/#uslugi', label: 'Usługi' },
   { href: '/zamow', label: 'Zamów' },
   { href: '/sklep', label: 'Sklep' },
+  { href: '/sledzenie', label: 'Śledź' },
   { href: '/zamow', label: 'Wycena', cta: true },
 ]
 
@@ -45,8 +47,9 @@ export default function Nav() {
         backdropFilter: scrolled || open ? 'blur(12px)' : 'none',
         transition: 'all 0.3s',
       }}>
-        <Link href="/" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.9rem', letterSpacing: '0.05em' }} onClick={() => setOpen(false)}>
-          <span style={{ color: 'var(--accent)' }}>Print</span>-Forge
+        <Link href="/" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.9rem', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '0.6rem' }} onClick={() => setOpen(false)}>
+          <Image src="/logomark.svg" width={50} height={50} alt="Print-Forge logomark" />
+          <span><span style={{ color: 'var(--accent)' }}>Print</span><span style={{ color: 'var(--text)' }}>-Forge</span></span>
         </Link>
 
         <ul className="nav-list">

@@ -103,6 +103,32 @@
 .step h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 0.04em; margin-bottom: 0.5rem; }
 .step p { font-size: 0.85rem; color: var(--muted); font-weight: 300; line-height: 1.7; }
 
+/* TRACK */
+.trackSection {
+  padding: 6rem 4rem; background: var(--surface); border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; gap: 4rem;
+}
+.trackLeft { flex: 1; max-width: 420px; }
+.trackLeft h2 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2rem, 3vw, 3rem); letter-spacing: 0.03em; line-height: 1; margin-bottom: 0.75rem; }
+.trackLeft p { color: var(--muted); font-size: 0.95rem; font-weight: 300; line-height: 1.7; }
+.trackRight { flex: 1; max-width: 480px; }
+.trackForm { display: flex; gap: 0.75rem; }
+.trackInput {
+  flex: 1; background: var(--bg); border: 1px solid var(--border);
+  color: var(--text); padding: 0.85rem 1rem; border-radius: 2px;
+  font-size: 0.85rem; font-family: 'DM Mono', monospace; outline: none;
+  letter-spacing: 0.04em; transition: border-color 0.2s; min-width: 0;
+}
+.trackInput:focus { border-color: var(--accent); }
+.trackBtn {
+  background: var(--accent); color: white; border: none;
+  padding: 0.85rem 1.5rem; font-size: 0.8rem; font-family: 'DM Mono', monospace;
+  letter-spacing: 0.1em; text-transform: uppercase; border-radius: 2px;
+  cursor: pointer; white-space: nowrap; transition: background 0.2s; flex-shrink: 0;
+}
+.trackBtn:hover { background: var(--accent2); }
+.trackHint { margin-top: 0.75rem; font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--muted); }
+
 /* CTA */
 .ctaSection {
   background: var(--accent); padding: 6rem 4rem;
@@ -135,6 +161,9 @@
 .btnWhite:hover { background: var(--bg); color: white; }
 
 @media (max-width: 1024px) {
+  .trackSection { flex-direction: column; gap: 2rem; padding: 5rem 2rem; }
+  .trackLeft { max-width: 100%; }
+  .trackRight { max-width: 100%; width: 100%; }
   .hero { grid-template-columns: 1fr; }
   .heroRight { display: none; }
   .stats { grid-template-columns: 1fr 1fr; }
@@ -147,6 +176,9 @@
 }
 
 @media (max-width: 640px) {
+  .trackSection { padding: 3.5rem 1.5rem; }
+  .trackForm { flex-direction: column; }
+  .trackBtn { width: 100%; text-align: center; }
   .heroLeft { padding: 5rem 1.5rem 3rem; }
   .stat { padding: 1.25rem 1rem; }
   .statNum { font-size: 2.2rem; }

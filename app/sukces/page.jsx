@@ -22,15 +22,15 @@ const btnOutline = {
 function SukcesContent() {
   const searchParams = useSearchParams()
   const sessionId = searchParams.get('session_id')
-  const [state, setState] = useState('loading') // 'loading' | 'custom' | 'shop' | 'generic'
+  const [state, setState] = useState('loading') // 'loading' | 'custom' | 'shop' | 'unconfirmed' | 'error'
   const [order, setOrder] = useState(null)
   const [attempts, setAttempts] = useState(0)
 
   useEffect(() => {
-    if (!sessionId) { setState('generic'); return }
+    if (!sessionId) { setState('error'); return }
 
     let tries = 0
-    const maxTries = 6
+    const maxTries = 8
 
     const poll = async () => {
       try {
@@ -47,11 +47,11 @@ function SukcesContent() {
       tries++
       setAttempts(tries)
 
-      // Webhook może być opóźniony — odpytuj co 2s, max 6 razy (12s)
+      // Webhook może być opóźniony — odpytuj co 2s, max 8 razy (16s)
       if (tries < maxTries) {
         setTimeout(poll, 2000)
       } else {
-        setState('generic')
+        setState('unconfirmed')
       }
     }
 
@@ -156,18 +156,40 @@ function SukcesContent() {
     )
   }
 
-  // Fallback — brak session_id lub timeout webhooka
+  // Timeout — płatność przeszła w Stripe, ale webhook jeszcze nie zaktualizował statusu
+  if (state === 'unconfirmed') {
+    return (
+      <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4rem 2rem', textAlign: 'center' }}>
+        <div style={{ maxWidth: '520px' }}>
+          <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>⏳</div>
+          <h1 style={{ fontFamily: bebas, fontSize: 'clamp(2.5rem, 5vw, 4rem)', color: 'var(--accent)', lineHeight: 1, marginBottom: '1.5rem' }}>Weryfikacja w toku</h1>
+          <p style={{ color: 'var(--muted)', fontSize: '1rem', lineHeight: 1.8, fontWeight: 300, marginBottom: '1.5rem' }}>
+            Płatność została złożona, ale potwierdzenie z systemu płatności jeszcze nie dotarło.
+          </p>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderLeft: '3px solid #f59e0b', padding: '1rem 1.25rem', borderRadius: '2px', textAlign: 'left', marginBottom: '2rem', fontSize: '0.85rem', color: 'var(--muted)', lineHeight: 1.7 }}>
+            Sprawdź skrzynkę e-mail — potwierdzenie powinno dotrzeć w ciągu kilku minut. Możesz też śledzić status zamówienia za pomocą ID z wiadomości.
+          </div>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <Link href="/sledzenie" style={btnPrimary}>Śledź zamówienie</Link>
+            <Link href="/" style={btnOutline}>Strona główna</Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Brak session_id — ktoś wszedł bezpośrednio pod adres
   return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4rem 2rem', textAlign: 'center' }}>
       <div style={{ maxWidth: '500px' }}>
-        <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>✅</div>
-        <h1 style={{ fontFamily: bebas, fontSize: 'clamp(2.5rem, 5vw, 4.5rem)', color: 'var(--accent)', lineHeight: 1, marginBottom: '1.5rem' }}>Płatność przyjęta!</h1>
+        <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>❌</div>
+        <h1 style={{ fontFamily: bebas, fontSize: 'clamp(2.5rem, 5vw, 4rem)', color: '#ef4444', lineHeight: 1, marginBottom: '1.5rem' }}>Nie znaleziono płatności</h1>
         <p style={{ color: 'var(--muted)', fontSize: '1rem', lineHeight: 1.8, fontWeight: 300, marginBottom: '2rem' }}>
-          Dziękujemy za zamówienie. Potwierdzenie zostało wysłane na Twój adres e-mail.
+          Nie możemy zweryfikować tej płatności. Jeśli dokonałeś zakupu, sprawdź e-mail lub skontaktuj się z nami.
         </p>
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <Link href="/" style={btnPrimary}>Strona główna</Link>
-          <Link href="/sklep" style={btnOutline}>Sklep</Link>
+          <Link href="/sledzenie" style={btnPrimary}>Śledź zamówienie</Link>
+          <Link href="/" style={btnOutline}>Strona główna</Link>
         </div>
       </div>
     </div>

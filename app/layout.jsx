@@ -3,7 +3,10 @@ import Cursor from '@/components/Cursor'
 
 export const metadata = {
   title: 'Print-Forge — Druk 3D na Zamówienie',
-  description: 'Profesjonalny druk 3D: customowe wydruki z Twojego pliku oraz gotowe modele ze sklepu. Warszawa i cała Polska.',
+  description: 'Profesjonalny druk 3D: customowe wydruki z Twojego pliku oraz gotowe modele ze sklepu.',
+  icons: {
+    icon: '/favicon.svg',
+  },
 }
 
 export const viewport = {

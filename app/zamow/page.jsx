@@ -26,7 +26,7 @@ export default function ZamowPage() {
       const res = await fetch('/api/orders/custom', { method: 'POST', body: data })
       const json = await res.json()
       if (json.success) {
-        show('Zamówienie przyjęte! 🚀', 'Skontaktujemy się w ciągu 2 godzin roboczych.')
+        show('Zamówienie przyjęte! 🚀', 'Skontaktujemy się w ciągu kilku godzin roboczych.')
         setForm({ customer_name: '', customer_email: '', customer_phone: '', technology: 'FDM', material: 'PLA', color: 'Biały', quantity: 1, notes: '' })
         setFile(null)
       } else {
@@ -62,7 +62,7 @@ export default function ZamowPage() {
           <div>
             <FileUpload onFileSelect={setFile} />
             <div style={{ marginTop: '1rem', background: 'var(--surface)', border: '1px solid var(--border)', borderLeft: '3px solid var(--accent)', padding: '1rem 1.25rem', borderRadius: '2px', fontSize: '0.85rem', color: 'var(--muted)' }}>
-              ℹ️ Cena zależy od objętości modelu i wybranego materiału. Wycena <strong style={{ color: 'var(--accent)' }}>bezpłatna, w ciągu 2 godzin</strong>.
+              ℹ️ Cena zależy od objętości modelu i wybranego materiału. Wycena <strong style={{ color: 'var(--accent)' }}>bezpłatna, w ciągu kilku godzin</strong>.
             </div>
           </div>
 

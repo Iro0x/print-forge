@@ -20,10 +20,10 @@ export default function Footer() {
         <div className="footer-grid">
           <div>
             <Link href="/" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.9rem', display: 'inline-block', marginBottom: '1rem' }}>
-              <span style={{ color: 'var(--accent)' }}>Print</span>Forge
+              <span style={{ color: 'var(--accent)' }}>Print</span><span style={{ color: 'var(--text)' }}>-Forge</span>
             </Link>
             <p style={{ fontSize: '0.85rem', color: 'var(--muted)', fontWeight: 300, lineHeight: 1.7, maxWidth: '220px' }}>
-              Profesjonalny druk 3D dla hobbystów, projektantów i firm. Warszawa i cała Polska.
+              Profesjonalny druk 3D dla hobbystów, projektantów i firm.
             </p>
           </div>
           {[

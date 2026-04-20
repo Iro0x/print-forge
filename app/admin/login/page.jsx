@@ -44,10 +44,9 @@ export default function AdminLoginPage() {
             fontFamily: "'Bebas Neue', sans-serif",
             fontSize: '2.5rem',
             letterSpacing: '0.1em',
-            color: 'var(--accent)',
             lineHeight: 1,
           }}>
-            PRINT-FORGE
+            <span style={{ color: 'var(--accent)' }}>PRINT</span><span style={{ color: 'var(--text)' }}>-FORGE</span>
           </div>
           <div style={{
             fontFamily: "'DM Mono', monospace",

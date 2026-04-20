@@ -122,7 +122,9 @@ export default function WycenaPage() {
 
         {/* Logo */}
         <div style={{ marginBottom: '2.5rem' }}>
-          <a href="/" style={{ fontFamily: bebas, fontSize: '1.8rem', letterSpacing: '3px', color: '#ff4500', textDecoration: 'none' }}>PRINT-FORGE</a>
+          <a href="/" style={{ fontFamily: bebas, fontSize: '1.8rem', letterSpacing: '3px', textDecoration: 'none' }}>
+            <span style={{ color: '#ff4500' }}>PRINT</span><span style={{ color: '#f0ece4' }}>-FORGE</span>
+          </a>
         </div>
 
         {/* Karta */}

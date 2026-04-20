@@ -15,6 +15,7 @@ export async function GET(request) {
     .single()
 
   if (customOrder) {
+    if (customOrder.status !== 'paid') return NextResponse.json({ error: 'Nie znaleziono zamówienia' }, { status: 404 })
     return NextResponse.json({ type: 'custom', order: customOrder })
   }
 
@@ -26,6 +27,7 @@ export async function GET(request) {
     .single()
 
   if (shopOrder) {
+    if (shopOrder.status !== 'paid') return NextResponse.json({ error: 'Nie znaleziono zamówienia' }, { status: 404 })
     return NextResponse.json({ type: 'shop', order: shopOrder })
   }
 

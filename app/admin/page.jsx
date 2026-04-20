@@ -27,11 +27,12 @@ function parseNegotiation(adminNote) {
 const iStyle = { width: '100%', background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)', padding: '0.6rem 0.9rem', borderRadius: '2px', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit' }
 const lStyle = { display: 'block', fontSize: '0.7rem', fontFamily: "'DM Mono', monospace", color: 'var(--muted)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.35rem' }
 const thStyle = { padding: '0.75rem 1rem', fontSize: '0.7rem', fontFamily: "'DM Mono', monospace", letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)', textAlign: 'left', borderBottom: '1px solid var(--border)', whiteSpace: 'nowrap' }
-const tdStyle = { padding: '0.75rem 1rem', fontSize: '0.85rem', borderBottom: '1px solid var(--border)', color: 'var(--muted)' }
+const tdStyle = { padding: '0.75rem 1rem', fontSize: '0.85rem', borderBottom: '1px solid var(--border)', color: 'var(--muted)', cursor: 'inherit' }
 
-function StatCard({ icon, label, value, sub, color }) {
+function StatCard({ icon, label, value, sub, color, onClick }) {
+  const [hovered, setHovered] = useState(false)
   return (
-    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderTop: `3px solid ${color || 'var(--accent)'}`, padding: '1.5rem', borderRadius: '2px' }}>
+    <div onClick={onClick} onMouseEnter={() => onClick && setHovered(true)} onMouseLeave={() => setHovered(false)} role={onClick ? 'button' : undefined} style={{ background: hovered ? 'var(--surface2, #2a2a2a)' : 'var(--surface)', border: '1px solid var(--border)', borderTop: `3px solid ${color || 'var(--accent)'}`, padding: '1.5rem', borderRadius: '2px', cursor: onClick ? 'pointer' : 'default', transition: 'background 0.15s' }}>
       <div style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>{icon}</div>
       <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.5rem', color: color || 'var(--accent)', lineHeight: 1, marginBottom: '0.25rem' }}>{value}</div>
       <div style={{ fontSize: '0.85rem', fontWeight: 500, marginBottom: '0.2rem' }}>{label}</div>
@@ -150,6 +151,7 @@ export default function AdminPage() {
   const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState(null)
   const [modalDraft, setModalDraft] = useState(null)
+  const [showStatusEdit, setShowStatusEdit] = useState(false)
 
   const showToast = (msg, ok = true) => { setToast({ msg, ok }); setTimeout(() => setToast(null), 3000) }
 
@@ -255,6 +257,7 @@ export default function AdminPage() {
   const openModal = (order, type) => {
     setSelectedOrder(order)
     setOrderType(type)
+    setShowStatusEdit(false)
     setModalDraft({
       status: order.status,
       quoted_price: order.quoted_price || '',
@@ -308,6 +311,16 @@ export default function AdminPage() {
                 {selectedOrder.customer_phone && <div><span style={{ color: 'var(--muted)' }}>Tel: </span>{selectedOrder.customer_phone}</div>}
                 <div><span style={{ color: 'var(--muted)' }}>Data: </span>{new Date(selectedOrder.created_at).toLocaleDateString('pl-PL')}</div>
                 {selectedOrder.shipping_address && <div style={{ gridColumn: 'span 2' }}><span style={{ color: 'var(--muted)' }}>Adres: </span>{selectedOrder.shipping_address}</div>}
+                <div style={{ gridColumn: 'span 2', marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ color: 'var(--muted)' }}>ID śledzenia: </span>
+                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.78rem', color: 'var(--text)' }}>{selectedOrder.id}</span>
+                  <button
+                    onClick={() => { navigator.clipboard.writeText(selectedOrder.id); showToast('Skopiowano ID ✓') }}
+                    style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--muted)', padding: '0.1rem 0.5rem', fontSize: '0.65rem', fontFamily: "'DM Mono', monospace", borderRadius: '2px', cursor: 'pointer', flexShrink: 0 }}
+                  >
+                    kopiuj
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -374,16 +387,31 @@ export default function AdminPage() {
 
             {modalDraft && (
               <>
-                <div>
-                  <label style={lStyle}>Status</label>
-                  <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-                    {(orderType === 'custom' ? CUSTOM_STATUSES : SHOP_STATUSES).map(s => (
-                      <button key={s} onClick={() => setModalDraft(d => ({ ...d, status: s }))} style={{ background: modalDraft.status === s ? (STATUS_COLORS[s] + '33') : 'transparent', border: `1px solid ${modalDraft.status === s ? STATUS_COLORS[s] : 'var(--border)'}`, color: modalDraft.status === s ? STATUS_COLORS[s] : 'var(--muted)', padding: '0.35rem 0.75rem', fontSize: '0.75rem', fontFamily: "'DM Mono', monospace", borderRadius: '2px', cursor: 'pointer' }}>{s}</button>
-                    ))}
+                {/* STATUS */}
+                <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', padding: '1.25rem', borderRadius: '2px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: showStatusEdit ? '1rem' : 0 }}>
+                    <div>
+                      <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', color: 'var(--muted)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.4rem' }}>Aktualny status</div>
+                      <StatusBadge status={modalDraft.status} />
+                    </div>
+                    <button
+                      onClick={() => setShowStatusEdit(v => !v)}
+                      style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--muted)', padding: '0.3rem 0.75rem', fontSize: '0.7rem', fontFamily: "'DM Mono', monospace", letterSpacing: '0.08em', textTransform: 'uppercase', borderRadius: '2px', cursor: 'pointer' }}
+                    >
+                      {showStatusEdit ? '▲ Ukryj' : '▾ Zmień status'}
+                    </button>
                   </div>
+                  {showStatusEdit && (
+                    <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', paddingTop: '0.25rem', borderTop: '1px solid var(--border)' }}>
+                      {(orderType === 'custom' ? CUSTOM_STATUSES : SHOP_STATUSES).map(s => (
+                        <button key={s} onClick={() => setModalDraft(d => ({ ...d, status: s }))} style={{ background: modalDraft.status === s ? (STATUS_COLORS[s] + '33') : 'transparent', border: `1px solid ${modalDraft.status === s ? STATUS_COLORS[s] : 'var(--border)'}`, color: modalDraft.status === s ? STATUS_COLORS[s] : 'var(--muted)', padding: '0.35rem 0.75rem', fontSize: '0.75rem', fontFamily: "'DM Mono', monospace", borderRadius: '2px', cursor: 'pointer' }}>{s}</button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                {orderType === 'custom' && (
+                {/* WYCENA — tylko dla custom i tylko gdy status ma sens */}
+                {orderType === 'custom' && ['pending', 'quoted', 'negotiating'].includes(modalDraft.status) && (
                   <div>
                     <label style={lStyle}>Wycena (zł)</label>
                     <input
@@ -397,6 +425,7 @@ export default function AdminPage() {
                   </div>
                 )}
 
+                {/* NOTATKA */}
                 <div>
                   <label style={lStyle}>Notatka wewnętrzna</label>
                   <textarea
@@ -453,8 +482,8 @@ export default function AdminPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
                   <StatCard icon="💰" label="Przychód ze sklepu" value={`${stats.revenue} zł`} sub="tylko opłacone" color="#10b981" />
-                  <StatCard icon="📁" label="Zamówienia customowe" value={stats.customTotal} sub={`${stats.pendingCustom} oczekujących`} color="#8b5cf6" />
-                  <StatCard icon="🛒" label="Zamówienia sklepowe" value={stats.shopTotal} sub={`${stats.pendingShop} oczekujących`} color="#3b82f6" />
+                  <StatCard icon="📁" label="Zamówienia customowe" value={stats.customTotal} sub={`${stats.pendingCustom} oczekujących`} color="#8b5cf6" onClick={() => setActiveTab(1)} />
+                  <StatCard icon="🛒" label="Zamówienia sklepowe" value={stats.shopTotal} sub={`${stats.pendingShop} oczekujących`} color="#3b82f6" onClick={() => setActiveTab(2)} />
                   <StatCard icon="📅" label="W tym miesiącu" value={stats.ordersThisMonth} sub="łącznie wszystkie" color="#ff7c45" />
                 </div>
                 <div>
@@ -464,7 +493,7 @@ export default function AdminPage() {
                       <thead><tr style={{ background: 'var(--surface)' }}>{['Data', 'Klient', 'Typ', 'Status', 'Kwota'].map(h => <th key={h} style={thStyle}>{h}</th>)}</tr></thead>
                       <tbody>
                         {[...custom.slice(0, 5).map(o => ({ ...o, _type: 'custom' })), ...shop.slice(0, 5).map(o => ({ ...o, _type: 'shop' }))].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 8).map(o => (
-                          <tr key={o.id} style={{ background: 'var(--bg)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface)'} onMouseLeave={e => e.currentTarget.style.background = 'var(--bg)'}>
+                          <tr key={o.id} role="button" style={{ background: 'var(--bg)', cursor: 'pointer', transition: 'background 0.15s' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2, #2a2a2a)'} onMouseLeave={e => e.currentTarget.style.background = 'var(--bg)'} onClick={() => { setActiveTab(o._type === 'custom' ? 1 : 2); openModal(o, o._type) }}>
                             <td style={tdStyle}>{new Date(o.created_at).toLocaleDateString('pl-PL')}</td>
                             <td style={{ ...tdStyle, color: 'var(--text)', fontWeight: 500 }}>{o.customer_name}</td>
                             <td style={tdStyle}><span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem' }}>{o._type}</span></td>
@@ -493,12 +522,10 @@ export default function AdminPage() {
                         <td style={tdStyle}><a href={`mailto:${o.customer_email}`} style={{ color: 'var(--accent)' }}>{o.customer_email}</a></td>
                         <td style={tdStyle}>{o.technology} / {o.material}</td>
                         <td style={{ ...tdStyle, fontFamily: "'DM Mono', monospace", fontSize: '0.75rem' }}>{o.file_name || '—'}</td>
-                        <td style={tdStyle}>
-                          <select value={o.status} onChange={e => updateOrder(o.id, 'custom', { status: e.target.value })} style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: STATUS_COLORS[o.status] || 'var(--text)', padding: '0.2rem 0.4rem', borderRadius: '2px', fontSize: '0.75rem', fontFamily: "'DM Mono', monospace", cursor: 'pointer' }}>
-                            {CUSTOM_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
-                          </select>
+                        <td style={tdStyle}><StatusBadge status={o.status} /></td>
+                        <td style={{ ...tdStyle, color: 'var(--accent)', fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem' }}>
+                          {['quoted', 'negotiating', 'paid', 'printing', 'shipped', 'done'].includes(o.status) && o.quoted_price ? `${o.quoted_price} zł` : '—'}
                         </td>
-                        <td style={{ ...tdStyle, color: 'var(--accent)', fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem' }}>{o.quoted_price ? `${o.quoted_price} zł` : '—'}</td>
                         <td style={tdStyle}>
                           <button onClick={() => openModal(o, 'custom')} style={{ background: 'var(--accent)', color: 'white', border: 'none', padding: '0.3rem 0.75rem', fontSize: '0.72rem', fontFamily: "'DM Mono', monospace", borderRadius: '2px', cursor: 'pointer' }}>
                             Szczegóły →
@@ -525,11 +552,7 @@ export default function AdminPage() {
                         <td style={tdStyle}><a href={`mailto:${o.customer_email}`} style={{ color: 'var(--accent)' }}>{o.customer_email}</a></td>
                         <td style={{ ...tdStyle, fontSize: '0.8rem', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.shipping_address || '—'}</td>
                         <td style={{ ...tdStyle, color: 'var(--accent)', fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem' }}>{o.total_amount} zł</td>
-                        <td style={tdStyle}>
-                          <select value={o.status} onChange={e => updateOrder(o.id, 'shop', { status: e.target.value })} style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: STATUS_COLORS[o.status] || 'var(--text)', padding: '0.2rem 0.4rem', borderRadius: '2px', fontSize: '0.75rem', fontFamily: "'DM Mono', monospace", cursor: 'pointer' }}>
-                            {SHOP_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
-                          </select>
-                        </td>
+                        <td style={tdStyle}><StatusBadge status={o.status} /></td>
                         <td style={tdStyle}>
                           <button onClick={() => openModal(o, 'shop')} style={{ background: 'var(--accent)', color: 'white', border: 'none', padding: '0.3rem 0.75rem', fontSize: '0.72rem', fontFamily: "'DM Mono', monospace", borderRadius: '2px', cursor: 'pointer' }}>
                             Szczegóły →
