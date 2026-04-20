@@ -14,6 +14,8 @@ export default function ZamowPage() {
     customer_name: '', customer_email: '', customer_phone: '',
     material: '', color: '', quantity: 1, notes: '',
   })
+  const [requestFilament, setRequestFilament] = useState(false)
+  const [filamentRequest, setFilamentRequest] = useState({ brand: '', material: '', color_name: '', color_hex: '#ff4500' })
 
   useEffect(() => {
     fetch('/api/filaments').then(r => r.json()).then(json => {
@@ -42,11 +44,24 @@ export default function ZamowPage() {
 
   const handleSubmit = async () => {
     if (!form.customer_name || !form.customer_email) { show('Błąd ⚠️', 'Imię i e-mail są wymagane.'); return }
+    if (requestFilament && !filamentRequest.material) { show('Błąd ⚠️', 'Podaj przynajmniej rodzaj filamentu.'); return }
     setLoading(true)
     try {
       const data = new FormData()
       if (file) data.append('file', file)
-      Object.entries(form).forEach(([k, v]) => data.append(k, v))
+
+      let finalNotes = form.notes
+      if (requestFilament) {
+        const parts = [
+          filamentRequest.brand && `Marka: ${filamentRequest.brand}`,
+          filamentRequest.material && `Materiał: ${filamentRequest.material}`,
+          filamentRequest.color_name && `Kolor: ${filamentRequest.color_name} (${filamentRequest.color_hex})`,
+        ].filter(Boolean).join(', ')
+        const tag = `[PROŚBA O FILAMENT: ${parts}]`
+        finalNotes = finalNotes ? `${tag}\n\n${finalNotes}` : tag
+      }
+
+      Object.entries({ ...form, notes: finalNotes }).forEach(([k, v]) => data.append(k, v))
       const res = await fetch('/api/orders/custom', { method: 'POST', body: data })
       const json = await res.json()
       if (json.success) {
@@ -54,6 +69,8 @@ export default function ZamowPage() {
         const firstMaterial = filaments[0]?.material || ''
         const firstColor = filaments.find(f => f.material === firstMaterial)?.color_name || ''
         setForm({ customer_name: '', customer_email: '', customer_phone: '', material: firstMaterial, color: firstColor, quantity: 1, notes: '' })
+        setRequestFilament(false)
+        setFilamentRequest({ brand: '', material: '', color_name: '', color_hex: '#ff4500' })
         setFile(null)
       } else {
         show('Błąd ⚠️', json.error || 'Coś poszło nie tak.')
@@ -150,6 +167,75 @@ export default function ZamowPage() {
                 </div>
               )
             })()}
+
+            {/* Prośba o nowy filament */}
+            <div style={{ background: 'var(--surface)', border: `1px solid ${requestFilament ? 'var(--accent)' : 'var(--border)'}`, borderRadius: '2px', overflow: 'hidden', transition: 'border-color 0.2s' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.9rem 1.1rem', cursor: 'pointer', userSelect: 'none' }}>
+                <input
+                  type="checkbox"
+                  checked={requestFilament}
+                  onChange={e => setRequestFilament(e.target.checked)}
+                  style={{ width: '16px', height: '16px', accentColor: 'var(--accent)', cursor: 'pointer', flexShrink: 0 }}
+                />
+                <div>
+                  <div style={{ fontSize: '0.88rem', fontWeight: 500 }}>Nie widzę odpowiedniego filamentu</div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--muted)', fontFamily: "'DM Mono', monospace", marginTop: '0.15rem' }}>Opisz filament, który Cię interesuje — sprawdzimy dostępność</div>
+                </div>
+              </label>
+
+              {requestFilament && (
+                <div style={{ borderTop: '1px solid var(--border)', padding: '1rem 1.1rem', display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
+                  <div className="form-row-2">
+                    <div>
+                      <label style={labelStyle}>Marka filamentu</label>
+                      <input
+                        value={filamentRequest.brand}
+                        onChange={e => setFilamentRequest(p => ({ ...p, brand: e.target.value }))}
+                        placeholder="np. Bambu Lab, eSUN, Prusament..."
+                        style={inputStyle}
+                      />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Rodzaj / materiał *</label>
+                      <input
+                        value={filamentRequest.material}
+                        onChange={e => setFilamentRequest(p => ({ ...p, material: e.target.value }))}
+                        placeholder="np. PLA Silk+, PETG, TPU 95A..."
+                        style={inputStyle}
+                      />
+                    </div>
+                  </div>
+                  <div className="form-row-2">
+                    <div>
+                      <label style={labelStyle}>Nazwa koloru</label>
+                      <input
+                        value={filamentRequest.color_name}
+                        onChange={e => setFilamentRequest(p => ({ ...p, color_name: e.target.value }))}
+                        placeholder="np. Silk Gold, Matte Black..."
+                        style={inputStyle}
+                      />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Przybliżony kolor</label>
+                      <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
+                        <input
+                          type="color"
+                          value={filamentRequest.color_hex}
+                          onChange={e => setFilamentRequest(p => ({ ...p, color_hex: e.target.value }))}
+                          style={{ ...inputStyle, width: '52px', padding: '0.3rem', cursor: 'pointer', height: '48px', flexShrink: 0 }}
+                        />
+                        <div style={{ fontSize: '0.8rem', color: 'var(--muted)', fontFamily: "'DM Mono', monospace" }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <div style={{ width: '14px', height: '14px', borderRadius: '50%', background: filamentRequest.color_hex, border: '1px solid var(--border)', flexShrink: 0 }} />
+                            {filamentRequest.color_hex}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
 
             <div>
               <label style={labelStyle}>Uwagi / specyfikacja</label>

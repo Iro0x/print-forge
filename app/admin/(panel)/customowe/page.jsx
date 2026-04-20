@@ -59,7 +59,14 @@ export default function CustomowePage() {
                   <td style={tdStyle}>{new Date(o.created_at).toLocaleDateString('pl-PL')}</td>
                   <td style={{ ...tdStyle, color: 'var(--text)', fontWeight: 500 }}>{o.customer_name}</td>
                   <td style={tdStyle}><a href={`mailto:${o.customer_email}`} style={{ color: 'var(--accent)' }}>{o.customer_email}</a></td>
-                  <td style={tdStyle}>{o.technology} / {o.material}</td>
+                  <td style={tdStyle}>
+                    {o.technology} / {o.material}
+                    {o.notes?.includes('[PROŚBA O FILAMENT:') && (
+                      <span title="Prośba o nowy filament" style={{ marginLeft: '0.5rem', fontSize: '0.7rem', background: '#f59e0b22', color: '#f59e0b', border: '1px solid #f59e0b55', padding: '0.1rem 0.4rem', borderRadius: '2px', fontFamily: "'DM Mono', monospace", whiteSpace: 'nowrap' }}>
+                        nowy filament
+                      </span>
+                    )}
+                  </td>
                   <td style={{ ...tdStyle, fontFamily: "'DM Mono', monospace", fontSize: '0.75rem' }}>{o.file_name || '—'}</td>
                   <td style={tdStyle}><StatusBadge status={o.status} /></td>
                   <td style={{ ...tdStyle, color: 'var(--accent)', fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem' }}>

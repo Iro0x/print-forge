@@ -48,7 +48,7 @@ export default function Nav() {
         transition: 'all 0.3s',
       }}>
         <Link href="/" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.9rem', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '0.6rem' }} onClick={() => setOpen(false)}>
-          <Image src="/logomark.svg" width={50} height={50} alt="Print-Forge logomark" />
+          <Image src="/logomark.svg" width={38} height={38} alt="Print-Forge logomark" />
           <span><span style={{ color: 'var(--accent)' }}>Print</span><span style={{ color: 'var(--text)' }}>-Forge</span></span>
         </Link>
 

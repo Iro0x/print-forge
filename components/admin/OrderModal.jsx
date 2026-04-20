@@ -109,7 +109,21 @@ export default function OrderModal({ order, type, onClose, onSuccess, showToast 
                   )}
                 </div>
               )}
-              {order.notes && <div style={{ gridColumn: 'span 2' }}><span style={{ color: 'var(--muted)' }}>Uwagi: </span>{order.notes}</div>}
+              {order.notes && (() => {
+                const filamentMatch = order.notes.match(/\[PROŚBA O FILAMENT: ([^\]]+)\]/)
+                const cleanNotes = order.notes.replace(/\[PROŚBA O FILAMENT: [^\]]+\]\n?\n?/, '').trim()
+                return (
+                  <>
+                    {filamentMatch && (
+                      <div style={{ gridColumn: 'span 2', background: '#f59e0b15', border: '1px solid #f59e0b', borderLeft: '3px solid #f59e0b', padding: '0.75rem 1rem', borderRadius: '2px', marginTop: '0.25rem' }}>
+                        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.65rem', color: '#f59e0b', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '0.3rem' }}>Prośba o nowy filament</div>
+                        <div style={{ fontSize: '0.85rem' }}>{filamentMatch[1]}</div>
+                      </div>
+                    )}
+                    {cleanNotes && <div style={{ gridColumn: 'span 2' }}><span style={{ color: 'var(--muted)' }}>Uwagi: </span>{cleanNotes}</div>}
+                  </>
+                )
+              })()}
             </div>
           </div>
         )}

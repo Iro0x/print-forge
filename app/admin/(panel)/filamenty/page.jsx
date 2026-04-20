@@ -23,6 +23,7 @@ export default function FilamentyPage() {
   const [catalogOpen, setCatalogOpen] = useState(false)
   const [catalogBrand, setCatalogBrand] = useState(CATALOG_BRANDS[0])
   const [catalogMaterial, setCatalogMaterial] = useState('Wszystkie')
+  const [catalogSearch, setCatalogSearch] = useState('')
 
   const showToast = (msg, ok = true) => { setToast({ msg, ok }); setTimeout(() => setToast(null), 3000) }
 
@@ -79,9 +80,19 @@ export default function FilamentyPage() {
     setSaving(false)
   }
 
-  const catalogFiltered = useMemo(() => FILAMENT_CATALOG.filter(f =>
-    f.brand === catalogBrand && (catalogMaterial === 'Wszystkie' || f.material === catalogMaterial)
-  ), [catalogBrand, catalogMaterial])
+  const catalogFiltered = useMemo(() => {
+    const q = catalogSearch.trim().toLowerCase()
+    return FILAMENT_CATALOG.filter(f => {
+      if (f.brand !== catalogBrand) return false
+      if (catalogMaterial !== 'Wszystkie' && f.material !== catalogMaterial) return false
+      if (q) return (
+        f.color_name.toLowerCase().includes(q) ||
+        f.material.toLowerCase().includes(q) ||
+        (f.notes || '').toLowerCase().includes(q)
+      )
+      return true
+    })
+  }, [catalogBrand, catalogMaterial, catalogSearch])
 
   const catalogMaterials = useMemo(() => ['Wszystkie', ...new Set(FILAMENT_CATALOG.filter(f => f.brand === catalogBrand).map(f => f.material))], [catalogBrand])
 
@@ -128,13 +139,23 @@ export default function FilamentyPage() {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', color: 'var(--accent)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Katalog filamentów</span>
-              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.65rem', color: 'var(--muted)' }}>Bambu Lab · Sunlu · Elegoo</span>
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.65rem', color: 'var(--muted)' }}>Bambu Lab · Sunlu · Elegoo · eSUN · Fiberlogy</span>
             </div>
             <span style={{ color: 'var(--muted)', transition: 'transform 0.2s', transform: catalogOpen ? 'rotate(180deg)' : 'none', display: 'inline-block' }}>▾</span>
           </button>
 
           {catalogOpen && (
             <div style={{ padding: '1.25rem 1.5rem', borderTop: '1px solid var(--border)' }}>
+              {/* Wyszukiwarka */}
+              <div style={{ marginBottom: '0.75rem' }}>
+                <input
+                  value={catalogSearch}
+                  onChange={e => setCatalogSearch(e.target.value)}
+                  placeholder="Szukaj po nazwie, materiale, notatce..."
+                  style={{ ...iStyle, width: '100%', boxSizing: 'border-box' }}
+                />
+              </div>
+
               {/* Filtry */}
               <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
                 {CATALOG_BRANDS.map(b => (
