@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import FileUpload from '@/components/FileUpload'
@@ -9,12 +9,36 @@ export default function ZamowPage() {
   const { toast, show } = useToast()
   const [file, setFile] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [filaments, setFilaments] = useState([])
   const [form, setForm] = useState({
     customer_name: '', customer_email: '', customer_phone: '',
-    technology: 'FDM', material: 'PLA', color: 'Biały', quantity: 1, notes: '',
+    material: '', color: '', quantity: 1, notes: '',
   })
 
-  const handleChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
+  useEffect(() => {
+    fetch('/api/filaments').then(r => r.json()).then(json => {
+      const data = json.data || []
+      setFilaments(data)
+      if (data.length > 0) {
+        const firstMaterial = data[0].material
+        const firstColor = data.find(f => f.material === firstMaterial)
+        setForm(prev => ({ ...prev, material: firstMaterial, color: firstColor?.color_name || '' }))
+      }
+    })
+  }, [])
+
+  const handleChange = e => {
+    const { name, value } = e.target
+    if (name === 'material') {
+      const firstColor = filaments.find(f => f.material === value)
+      setForm(prev => ({ ...prev, material: value, color: firstColor?.color_name || '' }))
+    } else {
+      setForm(prev => ({ ...prev, [name]: value }))
+    }
+  }
+
+  const materials = [...new Set(filaments.map(f => f.material))]
+  const colorsForMaterial = filaments.filter(f => f.material === form.material)
 
   const handleSubmit = async () => {
     if (!form.customer_name || !form.customer_email) { show('Błąd ⚠️', 'Imię i e-mail są wymagane.'); return }
@@ -27,7 +51,9 @@ export default function ZamowPage() {
       const json = await res.json()
       if (json.success) {
         show('Zamówienie przyjęte! 🚀', 'Skontaktujemy się w ciągu kilku godzin roboczych.')
-        setForm({ customer_name: '', customer_email: '', customer_phone: '', technology: 'FDM', material: 'PLA', color: 'Biały', quantity: 1, notes: '' })
+        const firstMaterial = filaments[0]?.material || ''
+        const firstColor = filaments.find(f => f.material === firstMaterial)?.color_name || ''
+        setForm({ customer_name: '', customer_email: '', customer_phone: '', material: firstMaterial, color: firstColor, quantity: 1, notes: '' })
         setFile(null)
       } else {
         show('Błąd ⚠️', json.error || 'Coś poszło nie tak.')
@@ -90,24 +116,41 @@ export default function ZamowPage() {
             </div>
             <div className="form-row-2">
               <div>
-                <label style={labelStyle}>Technologia</label>
-                <select name="technology" value={form.technology} onChange={handleChange} style={inputStyle}>
-                  <option>FDM</option><option>SLA</option><option>SLS</option>
+                <label style={labelStyle}>Materiał</label>
+                <select name="material" value={form.material} onChange={handleChange} style={inputStyle} disabled={materials.length === 0}>
+                  {materials.length === 0
+                    ? <option>Ładowanie...</option>
+                    : materials.map(m => <option key={m}>{m}</option>)
+                  }
                 </select>
               </div>
               <div>
-                <label style={labelStyle}>Materiał</label>
-                <select name="material" value={form.material} onChange={handleChange} style={inputStyle}>
-                  <option>PLA</option><option>PETG</option><option>ABS</option><option>TPU</option><option>Żywica standardowa</option><option>Żywica ABS-like</option>
+                <label style={labelStyle}>Kolor</label>
+                <select name="color" value={form.color} onChange={handleChange} style={inputStyle} disabled={colorsForMaterial.length === 0}>
+                  {colorsForMaterial.length === 0
+                    ? <option>Brak kolorów</option>
+                    : colorsForMaterial.map(f => (
+                        <option key={f.id} value={f.color_name}>
+                          {f.color_name}
+                        </option>
+                      ))
+                  }
                 </select>
               </div>
             </div>
-            <div>
-              <label style={labelStyle}>Kolor</label>
-              <select name="color" value={form.color} onChange={handleChange} style={inputStyle}>
-                {['Biały','Czarny','Szary','Czerwony','Niebieski','Zielony','Żółty','Transparentny','Inny — dopiszę w uwagach'].map(c => <option key={c}>{c}</option>)}
-              </select>
-            </div>
+
+            {/* Podgląd wybranego koloru */}
+            {form.color && (() => {
+              const selected = filaments.find(f => f.material === form.material && f.color_name === form.color)
+              if (!selected?.color_hex) return null
+              return (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.82rem', color: 'var(--muted)', fontFamily: "'DM Mono', monospace" }}>
+                  <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: selected.color_hex, border: '2px solid var(--border)', flexShrink: 0 }} />
+                  {selected.material} · {selected.color_name}
+                </div>
+              )
+            })()}
+
             <div>
               <label style={labelStyle}>Uwagi / specyfikacja</label>
               <textarea name="notes" value={form.notes} onChange={handleChange} placeholder="Opisz wymagania: tolerancje, przeznaczenie, wykończenie..." style={{ ...inputStyle, resize: 'vertical', minHeight: '100px' }} />
